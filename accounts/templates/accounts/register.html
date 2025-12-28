@@ -1,0 +1,32 @@
+{% extends 'blogs/base.html' %}
+
+{% block title %}注册{% endblock %}
+
+{% block content %}
+    <h2>注册新用户</h2>
+    
+    <form method="post" action="{% url 'accounts:register' %}">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="error" style="color: red;">
+                        {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if field.help_text %}
+                    <p class="help">{{ field.help_text }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit">注册</button>
+    </form>
+    
+    <p>已有账户？<a href="{% url 'accounts:login' %}">立即登录</a></p>
+{% endblock %}
