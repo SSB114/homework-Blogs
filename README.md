@@ -132,9 +132,8 @@ Blog/                           # 项目根目录
 
 ###### 1）克隆项目
 
-git clone https://github.com/Hyacine5207/hyacine4.git
+git clone 
 
-cd hyacine4
 
 ###### 2）设置虚拟环境
 
@@ -241,6 +240,7 @@ GitHub: https://github.com/SSB114/homework-Blogs
 
 
 提示：如果在使用过程中遇到问题，请先检查虚拟环境是否激活，以及所有迁移是否已正确应用。
+
 
 
 
