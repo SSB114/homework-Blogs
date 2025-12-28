@@ -1,0 +1,24 @@
+{% extends 'blogs/base.html' %}
+
+{% block title %}编辑文章{% endblock %}
+
+{% block content %}
+    <h2>编辑文章</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="id_title">标题:</label>
+            {{ form.title }}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_content">内容:</label>
+            {{ form.content }}
+        </div>
+        
+        <button type="submit">更新文章</button>
+        <a href="{% url 'blogs:index' %}">取消</a>
+    </form>
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends 'blogs/base.html' %}
+
+{% block title %}{{ post.title }} - 博客{% endblock %}
+
+{% block content %}
+<article>
+    <h2>{{ post.title }}</h2>
+    <p class="post-meta">
+        作者：{{ post.owner.username }} | 
+        发布于：{{ post.date_added|date:"Y-m-d H:i" }} |
+        点赞数：<span id="likes-count">{{ post.likes_count }}</span>
+    </p>
+    
+    <div class="post-content">
+        {{ post.content|linebreaks }}
+    </div>
+    
+    <!-- 点赞按钮 -->
+    <div class="like-section">
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'blogs:toggle_like' post.id %}" id="like-form">
+                {% csrf_token %}
+                <button type="submit" class="like-btn {% if user_has_liked %}liked{% endif %}">
+                    {% if user_has_liked %}
+                        ❤️ 已点赞
+                    {% else %}
+                        🤍 点赞
+                    {% endif %}
+                </button>
+            </form>
+        {% else %}
+            <p><a href="{% url 'accounts:login' %}">登录</a>后即可点赞</p>
+        {% endif %}
+    </div>
+</article>
+
+<!-- 评论区域 -->
+<section class="comments-section">
+    <h3>评论（{{ comments.count }}条）</h3>
+    
+    <!-- 评论表单 -->
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'blogs:add_comment' post.id %}" class="comment-form">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ comment_form.content }}
+        </div>
+        <button type="submit" class="btn btn-primary">发表评论</button>
+    </form>
+    {% else %}
+    <p>请先<a href="{% url 'accounts:login' %}">登录</a>后发表评论</p>
+    {% endif %}
+    
+    <!-- 评论列表 -->
+    <div class="comments-list">
+        {% for comment in comments %}
+        <div class="comment">
+            <div class="comment-header">
+                <strong>{{ comment.author.username }}</strong>
+                <span class="comment-time">{{ comment.created_at|date:"Y-m-d H:i" }}</span>
+                
+                {% if user == comment.author or user == post.owner %}
+                <form method="post" action="{% url 'blogs:delete_comment' comment.id %}" 
+                      class="delete-form" onsubmit="return confirm('确定删除这条评论吗？');">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">删除</button>
+                </form>
+                {% endif %}
+            </div>
+            <div class="comment-content">
+                {{ comment.content|linebreaks }}
+            </div>
+        </div>
+        {% empty %}
+        <p class="no-comments">还没有评论，快来抢沙发吧！</p>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+.like-btn {
+    background: none;
+    border: 2px solid #ff4757;
+    color: #ff4757;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.like-btn:hover {
+    background: #ff4757;
+    color: white;
+}
+
+.like-btn.liked {
+    background: #ff4757;
+    color: white;
+}
+
+.comment {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f9f9f9;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.comment-time {
+    color: #666;
+    font-size: 14px;
+}
+
+.delete-form {
+    display: inline;
+}
+
+.delete-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 3px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.no-comments {
+    text-align: center;
+    color: #666;
+    padding: 30px;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+}
+</style>
+
+<script>
+// AJAX点赞功能
+document.getElementById('like-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const button = form.querySelector('.like-btn');
+    const likesCount = document.getElementById('likes-count');
+    
+    // 发送AJAX请求
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 更新点赞数和按钮状态
+        likesCount.textContent = data.likes_count;
+        
+        if (data.liked) {
+            button.innerHTML = '❤️ 已点赞';
+            button.classList.add('liked');
+        } else {
+            button.innerHTML = '🤍 点赞';
+            button.classList.remove('liked');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // 如果AJAX失败，回退到表单提交
+        form.submit();
+    });
+});
+</script>
+{% endblock %}
