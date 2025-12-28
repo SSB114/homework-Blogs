@@ -234,11 +234,12 @@ python manage.py runserver
 
 课程：Python 课程实验
 
-作者：刘浩翔
+作者：陈致达
 
 GitHub: https://github.com/Hyacine5207/hyacine4
 
 
 
 提示：如果在使用过程中遇到问题，请先检查虚拟环境是否激活，以及所有迁移是否已正确应用。
+
 
