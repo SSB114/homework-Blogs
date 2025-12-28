@@ -1,4 +1,4 @@
-### **Django 个人博客系统**
+### **Django 博客系统**
 
 ##### **1.项目简介**
 
@@ -236,10 +236,11 @@ python manage.py runserver
 
 作者：陈致达
 
-GitHub: https://github.com/Hyacine5207/hyacine4
+GitHub: https://github.com/SSB114/homework-Blogs
 
 
 
 提示：如果在使用过程中遇到问题，请先检查虚拟环境是否激活，以及所有迁移是否已正确应用。
+
 
 
